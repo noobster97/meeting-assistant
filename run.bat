@@ -1,5 +1,9 @@
 @echo off
-rem Launch the GUI with pythonw (no black console window).
-set PYW=C:\Users\rumai\AppData\Local\Programs\Python\Python312\pythonw.exe
-if not exist "%PYW%" set PYW=pythonw
-start "" "%PYW%" "%~dp0meeting_assistant.py"
+rem Launch the app. Uses pythonw (no black console window) if available, else python.
+rem Requires Python on your PATH (see README "Quick start").
+where pythonw >nul 2>nul
+if %errorlevel%==0 (
+  start "" pythonw "%~dp0meeting_assistant.py"
+) else (
+  python "%~dp0meeting_assistant.py"
+)

@@ -12,23 +12,50 @@ Built for when your English is stronger written than spoken.
 
 ---
 
-## Two ways to run
+## Requirements
 
-**A) The app (easiest — no Python needed)**
-Double-click the **"Meeting Assistant"** shortcut on your Desktop, or run
-**`dist\MeetingAssistant\MeetingAssistant.exe`** directly.
-Keep the **`.env`** file (it holds your keys) inside `dist\MeetingAssistant\` next to the exe.
-You can move the whole `MeetingAssistant` folder anywhere — just fix the shortcut's target
-afterwards (right-click → Properties).
+- **Windows 10 / 11** — it captures your speaker output via **WASAPI loopback**
+  (`PyAudioWPatch`), which is Windows-only. It will not run on macOS or Linux.
+- **Python 3.10+** (3.12 recommended). Install from https://python.org and tick
+  *"Add Python to PATH"*, or `winget install Python.Python.3.12`.
+- A free **Groq** API key (required). A **Deepgram** key is optional (for instant captions).
 
-**B) From source (Python)**
-```
+## Quick start (run from source)
+
+```bat
+:: 1. get the code
+git clone https://github.com/noobster97/meeting-assistant.git
+cd meeting-assistant
+
+:: 2. (optional but recommended) isolate the dependencies
+python -m venv venv
+venv\Scripts\activate
+
+:: 3. install dependencies
 pip install -r requirements.txt
-run.bat          (or:  python meeting_assistant.py)
+
+:: 4. add your keys  —  copy the template, then edit .env
+copy .env.example .env
+notepad .env
+
+:: 5. run it
+run.bat
+::   ...or, to see logs in a console:  python meeting_assistant.py
 ```
 
-**Groq key** — already set in `.env`. Need a new one? https://console.groq.com/keys
-(free, no credit card) → paste it as `GROQ_API_KEY=...`.
+**Your keys go in `.env`** (never commit this file — it's already git-ignored):
+- `GROQ_API_KEY=...` — **required**. Free, no credit card: https://console.groq.com/keys
+- `DEEPGRAM_API_KEY=...` — *optional*, for instant word-by-word captions. Free $200
+  credit at https://console.deepgram.com. Leave it blank to use Groq transcription
+  (free-forever, ~1.5s behind). The app auto-falls-back to Groq if this key is missing.
+
+## Build a standalone .exe (optional)
+
+Prefer a double-click app with no Python? Build a one-folder exe — see
+[Rebuilding the exe](#rebuilding-the-exe-after-code-changes) below. After building, copy
+your `.env` into `dist\MeetingAssistant\` next to the new `MeetingAssistant.exe`, then run
+that exe (or make a Desktop shortcut to it). The built `dist\` folder is git-ignored, so it
+never ships in the repo — each user builds their own or runs from source.
 
 ---
 
@@ -85,5 +112,6 @@ new `MeetingAssistant.exe`.
 ## ⚠️ Fair use
 
 Great for standups, client calls, and team meetings. **Do not** use it in an interview or
-assessment where AI help isn't allowed. Also: the `.env` holds your API key — don't share
-the folder publicly.
+assessment where AI help isn't allowed. Also: your `.env` holds your API keys — keep it to
+yourself (it's git-ignored, so it won't be committed) and never paste keys into a shared
+copy or screenshot.
