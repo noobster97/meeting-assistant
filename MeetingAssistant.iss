@@ -24,6 +24,12 @@ Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
 ArchitecturesInstallIn64BitMode=x64compatible
+; Icon + version metadata on the installer itself (reduces heuristic AV false positives).
+SetupIconFile=appicon.ico
+VersionInfoVersion={#AppVersion}
+VersionInfoCompany=noobster97
+VersionInfoProductName={#AppName}
+VersionInfoDescription=Meeting Assistant Setup
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
