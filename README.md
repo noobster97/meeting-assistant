@@ -16,11 +16,26 @@ Built for when your English is stronger written than spoken.
 
 - **Windows 10 / 11** — it captures your speaker output via **WASAPI loopback**
   (`PyAudioWPatch`), which is Windows-only. It will not run on macOS or Linux.
-- **Python 3.10+** (3.12 recommended). Install from https://python.org and tick
-  *"Add Python to PATH"*, or `winget install Python.Python.3.12`.
-- A free **Groq** API key (required). A **Deepgram** key is optional (for instant captions).
+- A free **Groq** API key (the app asks you for it on first launch — see below).
+  A **Deepgram** key is optional, for instant captions.
+- **Python 3.10+** is needed **only if you run from source**. The downloadable app
+  below bundles everything — no Python required.
 
-## Quick start (run from source)
+## Download & run (easiest — no Python needed)
+
+1. Open the **[Releases](https://github.com/noobster97/meeting-assistant/releases/latest)**
+   page and download **`MeetingAssistant-windows-x64.zip`**.
+2. Right-click the zip → **Extract All**.
+3. Open the extracted folder and double-click **`MeetingAssistant.exe`**.
+4. **First launch** shows a small setup window — click *"Get a free Groq key"* (opens your
+   browser, no credit card), paste the key, hit **Save & Start**. That's the only setup,
+   and it's remembered for next time.
+
+> **"Windows protected your PC"?** That's Windows SmartScreen warning about an app it
+> doesn't recognize (this one isn't code-signed — a signing certificate costs a yearly fee).
+> Click **More info → Run anyway**. The app is safe: the full source is right here in this repo.
+
+## Run from source (developers)
 
 ```bat
 :: 1. get the code

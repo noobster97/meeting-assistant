@@ -23,6 +23,7 @@ import wave
 import queue
 import threading
 import subprocess
+import webbrowser
 from datetime import datetime
 
 import numpy as np
@@ -721,17 +722,124 @@ def build_ui():
     return root
 
 
+# ─────────────────────── first-run key setup ────────────────────────────
+def save_env(groq_key, dg_key):
+    """Write the API keys to .env next to the app (created if missing).
+    So a non-technical user never has to open a text file."""
+    lines = [
+        "# Meeting Assistant keys - keep this file private. Do not share or commit it.",
+        f"GROQ_API_KEY={groq_key or ''}",
+        f"DEEPGRAM_API_KEY={dg_key or ''}",
+    ]
+    try:
+        with open(os.path.join(APP_DIR, ".env"), "w", encoding="utf-8") as f:
+            f.write("\n".join(lines) + "\n")
+        return True
+    except Exception:
+        return False
+
+
+def first_run_setup(existing_groq="", existing_dg=""):
+    """Shown on first launch when no Groq key is found: ask for the key in a
+    friendly window, save it to .env, and return (groq_key, dg_key).
+    No terminal, no editing files by hand."""
+    result = {"groq": existing_groq or "", "dg": existing_dg or ""}
+
+    ctk.set_appearance_mode("dark")
+    ctk.set_default_color_theme("dark-blue")
+    setup = ctk.CTk()
+    setup.title("Meeting Assistant — Setup")
+    setup.geometry("470x430")
+    setup.minsize(470, 430)
+    setup.configure(fg_color=BG)
+    setup.wm_attributes("-topmost", True)
+    F = "Segoe UI"
+
+    ctk.CTkLabel(setup, text="🎙  Welcome to Meeting Assistant", font=(F, 17, "bold"),
+                 text_color=TXT).pack(anchor="w", padx=22, pady=(20, 4))
+    ctk.CTkLabel(setup, text="One quick step: paste your free Groq API key.\n"
+                 "It's free (no credit card) and is saved on your PC only.",
+                 font=(F, 12), text_color=MUTED, justify="left").pack(anchor="w", padx=22)
+
+    ctk.CTkButton(setup, text="🔑  Get a free Groq key  (opens browser)  →",
+                  command=lambda: webbrowser.open("https://console.groq.com/keys"),
+                  font=(F, 12, "bold"), fg_color=CARD2, hover_color="#2a2f3d",
+                  text_color=TXT, corner_radius=8, height=34).pack(
+        anchor="w", padx=22, pady=(12, 4))
+
+    ctk.CTkLabel(setup, text="GROQ API KEY   (required)", font=(F, 10, "bold"),
+                 text_color=MUTED).pack(anchor="w", padx=22, pady=(10, 2))
+    groq_entry = ctk.CTkEntry(setup, width=420, font=(F, 12), fg_color=CARD,
+                              placeholder_text="gsk_...")
+    groq_entry.pack(padx=22)
+    if existing_groq:
+        groq_entry.insert(0, existing_groq)
+
+    ctk.CTkLabel(setup, text="DEEPGRAM API KEY   (optional — for instant captions)",
+                 font=(F, 10, "bold"), text_color=MUTED).pack(anchor="w", padx=22, pady=(12, 2))
+    dg_entry = ctk.CTkEntry(setup, width=420, font=(F, 12), fg_color=CARD,
+                            placeholder_text="leave blank to use free Groq transcription")
+    dg_entry.pack(padx=22)
+    if existing_dg:
+        dg_entry.insert(0, existing_dg)
+
+    msg = tk.StringVar(value="")
+    ctk.CTkLabel(setup, textvariable=msg, font=(F, 11),
+                 text_color="#e0a24b").pack(anchor="w", padx=22, pady=(10, 0))
+
+    def save_and_start():
+        g = groq_entry.get().strip()
+        d = dg_entry.get().strip()
+        if not g:
+            msg.set("Please paste your Groq key first — or click Skip.")
+            return
+        if not save_env(g, d):
+            msg.set("Couldn't write .env (is the folder read-only?). Try Skip.")
+            return
+        os.environ["GROQ_API_KEY"] = g
+        os.environ["DEEPGRAM_API_KEY"] = d
+        result["groq"], result["dg"] = g, d
+        setup.quit()
+        setup.destroy()
+
+    def skip():
+        result["groq"] = groq_entry.get().strip()
+        result["dg"] = dg_entry.get().strip()
+        setup.quit()
+        setup.destroy()
+
+    row = ctk.CTkFrame(setup, fg_color="transparent")
+    row.pack(fill="x", padx=22, pady=(18, 12))
+    ctk.CTkButton(row, text="Save & Start", command=save_and_start, font=(F, 13, "bold"),
+                  fg_color=ACCENT, hover_color=ACCENT_H, text_color="#ffffff",
+                  corner_radius=10, height=40).pack(side="left")
+    ctk.CTkButton(row, text="Skip", command=skip, font=(F, 12),
+                  fg_color=CARD2, hover_color="#2a2f3d", corner_radius=10,
+                  height=40, width=80).pack(side="right")
+
+    groq_entry.focus()
+    setup.protocol("WM_DELETE_WINDOW", skip)
+    setup.mainloop()
+    return result["groq"], result["dg"]
+
+
 # ──────────────────────────────── main ──────────────────────────────────
 def main():
     global groq_client, deepgram_key, deepgram_active
     load_dotenv(os.path.join(APP_DIR, ".env"))
     key = os.getenv("GROQ_API_KEY")
+    dg = os.getenv("DEEPGRAM_API_KEY")
+
+    # First run (or key missing): ask for it in a friendly window, not a text file.
+    if not key:
+        key, dg = first_run_setup(key, dg)
+
     if key:
         groq_client = Groq(api_key=key)
     else:
         status_queue.put("No GROQ_API_KEY — answers/report won't work. See README.")
 
-    deepgram_key = os.getenv("DEEPGRAM_API_KEY")
+    deepgram_key = dg or os.getenv("DEEPGRAM_API_KEY")
     want_dg = load_engine_choice()
     deepgram_active = bool(want_dg and HAVE_WS and deepgram_key)
     if want_dg and not deepgram_active:
