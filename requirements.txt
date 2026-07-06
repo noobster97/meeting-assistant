@@ -1,0 +1,7 @@
+PyAudioWPatch
+groq
+keyboard
+python-dotenv
+numpy
+websocket-client
+customtkinter
