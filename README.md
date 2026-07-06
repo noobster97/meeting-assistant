@@ -136,3 +136,9 @@ Great for standups, client calls, and team meetings. **Do not** use it in an int
 assessment where AI help isn't allowed. Also: your `.env` holds your API keys — keep it to
 yourself (it's git-ignored, so it won't be committed) and never paste keys into a shared
 copy or screenshot.
+
+---
+
+## License
+
+[MIT](LICENSE) © noobster97 — free to use, modify, and share.
