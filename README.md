@@ -21,19 +21,25 @@ Built for when your English is stronger written than spoken.
 - **Python 3.10+** is needed **only if you run from source**. The downloadable app
   below bundles everything — no Python required.
 
-## Download & run (easiest — no Python needed)
+## Download & run (no Python needed)
 
-1. Open the **[Releases](https://github.com/noobster97/meeting-assistant/releases/latest)**
-   page and download **`MeetingAssistant-windows-x64.zip`**.
-2. Right-click the zip → **Extract All**.
-3. Open the extracted folder and double-click **`MeetingAssistant.exe`**.
-4. **First launch** shows a small setup window — click *"Get a free Groq key"* (opens your
-   browser, no credit card), paste the key, hit **Save & Start**. That's the only setup,
-   and it's remembered for next time.
+Get it from the **[Releases](https://github.com/noobster97/meeting-assistant/releases/latest)** page.
+
+**Recommended — the installer:**
+1. Download **`MeetingAssistant-Setup.exe`**.
+2. Run it — installs in seconds, **no admin needed**, adds Start Menu + Desktop shortcuts.
+3. **First launch** shows a small setup window — click *"Get a free Groq key"* (opens your
+   browser, no credit card), paste the key, hit **Save & Start**. Remembered for next time.
+
+**Or the portable zip** (no install): download **`MeetingAssistant-windows-x64.zip`** →
+right-click → **Extract All** → double-click **`MeetingAssistant.exe`**.
 
 > **"Windows protected your PC"?** That's Windows SmartScreen warning about an app it
-> doesn't recognize (this one isn't code-signed — a signing certificate costs a yearly fee).
-> Click **More info → Run anyway**. The app is safe: the full source is right here in this repo.
+> doesn't recognize yet (this one isn't code-signed — a signing certificate costs a yearly fee).
+> Click **More info → Run anyway**.
+
+**Is it safe?** The full source is right here in this repo, and every release lists
+**VirusTotal scan links + SHA-256 checksums** so you can verify the download yourself.
 
 ## Run from source (developers)
 
